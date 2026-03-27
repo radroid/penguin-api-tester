@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Penguin Mail API Testing Dashboard
 
-## Getting Started
+A developer tool for testing and debugging the [Penguin Mail](https://github.com/anthropics/penguin-mail) NestJS backend. Built with Next.js 16, React 19, Tailwind CSS 4, and shadcn/ui.
 
-First, run the development server:
+## What it does
+
+This dashboard lets you interact with every Penguin Mail API endpoint from a single page. It covers:
+
+- **Authentication** -- Register, login, Google/Microsoft OAuth, token refresh, logout
+- **Email Accounts** -- List connected accounts, view details, trigger sync, disconnect
+- **Mailboxes** -- Browse IMAP folders, view sync checkpoints
+- **Messages** -- Paginated message list, full message view with HTML body, flag/unflag, batch operations, delete
+- **Threads** -- Conversation threading with expandable message accordion
+- **Search** -- Full-text search with filters (from, date range, attachments, flagged)
+- **Send & Drafts** -- Compose and send emails, save drafts
+- **WebSocket** -- Connect to the real-time event stream, view live sync/message events
+- **API Log** -- Network-tab-style request log with timing, status codes, and expandable request/response bodies
+
+## What it measures
+
+- Response times for every API call (displayed as badges)
+- Error rates and status codes (color-coded: green 2xx, yellow 3xx, red 4xx/5xx)
+- JWT token expiry countdown
+- WebSocket connection state and event throughput
+- CORS and credential handling
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Install dependencies
+bun install
+
+# Start the dev server (runs on port 3000)
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Make sure the Penguin Mail backend is running on `http://localhost:3001`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16.2.1 (App Router) |
+| UI | React 19, shadcn/ui, Tailwind CSS 4 |
+| Language | TypeScript 5 |
+| Package manager | Bun |
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  layout.tsx                 # Root layout (AuthProvider, dark mode)
+  page.tsx                   # Dashboard — orchestrates all panels
+  auth/callback/page.tsx     # OAuth callback handler
+  lib/
+    types.ts                 # TypeScript types matching backend DTOs
+    api.ts                   # API client with timing, logging, auto-refresh
+    auth-context.tsx         # React context for auth state
+  components/
+    auth-panel.tsx           # Login / Register / OAuth / Token info
+    health-panel.tsx         # GET /health display
+    accounts-panel.tsx       # Email account management
+    mailboxes-panel.tsx      # IMAP folder browser
+    messages-panel.tsx       # Message list + viewer + batch ops
+    threads-panel.tsx        # Conversation threads
+    search-panel.tsx         # Full-text search
+    send-panel.tsx           # Email composer
+    websocket-panel.tsx      # WebSocket event monitor
+    api-log.tsx              # Request log (slide-up sheet)
+components/ui/               # shadcn/ui primitives
+```
