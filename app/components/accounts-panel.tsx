@@ -34,6 +34,17 @@ import * as api from "@/app/lib/api";
 import type { Account } from "@/app/lib/types";
 import { cn } from "@/lib/utils";
 
+const API_BASE = "http://localhost:3001";
+
+function connectGmail() {
+  const { accessToken } = api.getTokens();
+  if (!accessToken) {
+    toast.error("You must be logged in to connect a Gmail account");
+    return;
+  }
+  window.location.href = `${API_BASE}/api/accounts/connect/google?token=${encodeURIComponent(accessToken)}`;
+}
+
 interface AccountsPanelProps {
   onSelectAccount: (id: string, email: string) => void;
   selectedAccountId: string | null;
@@ -148,6 +159,12 @@ export function AccountsPanel({
             <Badge variant="outline">{durationMs}ms</Badge>
           )}
           <Button
+            size="sm"
+            onClick={connectGmail}
+          >
+            Connect Gmail
+          </Button>
+          <Button
             variant="outline"
             size="sm"
             onClick={fetchAccounts}
@@ -167,7 +184,7 @@ export function AccountsPanel({
 
         {accounts.length === 0 && !loading && !error && (
           <p className="text-sm text-muted-foreground">
-            No accounts found. Connect an account via OAuth on the backend.
+            No accounts found. Click &quot;Connect Gmail&quot; above to link your Google email.
           </p>
         )}
 

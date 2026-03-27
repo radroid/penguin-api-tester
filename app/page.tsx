@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/app/lib/auth-context";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -50,6 +51,29 @@ export default function DashboardPage() {
     },
     []
   );
+
+  // Handle OAuth callback URL params (account_connected, error)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const accountConnected = params.get("account_connected");
+    const error = params.get("error");
+
+    if (accountConnected) {
+      toast.success(`Gmail account connected! Account ID: ${accountConnected}`);
+      setSelectedAccountId(accountConnected);
+      // Clean URL
+      window.history.replaceState({}, "", "/");
+    } else if (error) {
+      const messages: Record<string, string> = {
+        oauth_denied: "Google OAuth was denied by the user.",
+        invalid_state: "Invalid OAuth state — possible CSRF. Try again.",
+        missing_user: "User session expired during OAuth. Log in and retry.",
+        connection_failed: "Failed to connect Gmail account. Check backend logs.",
+      };
+      toast.error(messages[error] || `OAuth error: ${error}`);
+      window.history.replaceState({}, "", "/");
+    }
+  }, []);
 
   const noAccountMessage = (
     <div className="flex items-center justify-center py-16 text-muted-foreground">
